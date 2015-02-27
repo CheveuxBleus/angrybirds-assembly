@@ -7,8 +7,7 @@ print_seta3:
 #linha1: 
 	addi $9, $9, 4 #começa na coluna 2
 
-	#7 Pixels
-	jal branco
+	#6 Pixels
 	jal branco
 	jal branco
 	jal branco
