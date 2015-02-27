@@ -2,7 +2,7 @@ main:	lui $9, 0x1004
 	#7 linhas
 	#8 colunas
 	
-print_seta2:
+print_seta3:
 	
 #linha1: 
 	addi $9, $9, 4 #começa na coluna 2
