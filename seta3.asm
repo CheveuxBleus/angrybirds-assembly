@@ -57,9 +57,6 @@ print_seta3:
 	#Pula 1
 	addi $9, $9, 4 #Pula
 	
-	#1 Pixel
-	jal branco
-	
 fim:	addi $2, $0, 10
 	syscall
 
