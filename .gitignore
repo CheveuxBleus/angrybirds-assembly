@@ -1,0 +1,4 @@
+#não ler as imagens
+*.png
+*.jpg
+*.bmp
