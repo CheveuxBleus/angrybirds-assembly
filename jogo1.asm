@@ -119,16 +119,6 @@ seta1:
 	addi $9, $9, 22620 #local onde começar a imprimir a seta
 	jal print_setaneg2
 	
-	#Apaga seta 3
-	lui $9, 0x1004
-	addi $9, $9, 19544 #local onde começar a imprimir a seta
-	jal print_setaneg3
-	
-	#Apaga seta 4
-	lui $9, 0x1004
-	addi $9, $9, 17988 #local onde começar a imprimir a seta
-	jal print_setaneg4
-	
 	#Print Seta1
 	lui $9, 0x1004
 	addi $9, $9, 24664 #local onde começar a imprimir a seta
@@ -148,11 +138,6 @@ seta2:
 	addi $9, $9, 19544 #local onde começar a imprimir a seta
 	jal print_setaneg3
 	
-	#Apaga seta 4
-	lui $9, 0x1004
-	addi $9, $9, 17988 #local onde começar a imprimir a seta
-	jal print_setaneg4
-	
 	#Print Seta2
 	lui $9, 0x1004
 	addi $9, $9, 22620 #local onde começar a imprimir a seta
@@ -161,13 +146,7 @@ seta2:
 	addi $15, $0, 2 #valor da seta = 2
 	j LeituraTec
 	
-seta3:
-	#Apaga seta 1
-	lui $9, 0x1004
-	addi $9, $9, 24664 #local onde começar a imprimir a seta
-	jal print_setaneg1
-	
-	#Apaga seta 2
+seta3:	#Apaga seta 2
 	lui $9, 0x1004
 	addi $9, $9, 22620 #local onde começar a imprimir a seta
 	jal print_setaneg2
@@ -185,17 +164,7 @@ seta3:
 	addi $15, $0, 3 #valor da seta = 3
 	j LeituraTec
 	
-seta4:	
-	#Apaga seta 1
-	lui $9, 0x1004
-	addi $9, $9, 24664 #local onde começar a imprimir a seta
-	jal print_setaneg1
-	
-	#Apaga seta 2
-	lui $9, 0x1004
-	addi $9, $9, 22620 #local onde começar a imprimir a seta
-	jal print_setaneg2
-	
+seta4:		
 	#Apaga seta 3
 	lui $9, 0x1004
 	addi $9, $9, 19544 #local onde começar a imprimir a seta
