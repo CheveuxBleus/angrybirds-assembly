@@ -5,10 +5,13 @@ main:	lui $9, 0x1004
 	#		    8 blue (menos significativo)
 	
 
-
+	#$8 -> temporario
 	addi $11, $0, 128 #tamanho da lateral (colunas)
 	addi $12, $0, 64 #tamanho vertical (linhas)
 	addi $13, $0, 54 #tamanho vertical (linhas-ceu)
+	#$14 -> compara tecla
+	#$15 -> valor da seta
+	#$16 -> checa se o usuario digitou algo
 	
 	
 	
@@ -34,7 +37,7 @@ main:	lui $9, 0x1004
 	addi $9, $9, 29696 #onde começa a desenhar a grama
 	addi $8, $0, 8 #salva local no registrador 8
 
-grama:	beq $0, $8, pxm 
+grama:	beq $0, $8, bird 
 	jal print_grama
 	subi $8, $8, 1
 	subi $9, $9, 1016
@@ -46,10 +49,57 @@ grama:	beq $0, $8, pxm
 #####################################################################	
 	
 	#Print Bird
-pxm:	lui $9, 0x1004
+bird:	lui $9, 0x1004
 	addi $9, $9, 19468 #local onde começar a imprimir o bird
 	jal print_bird
+	
+#####################################################################
+	#Print Seta Inicial
+#####################################################################	
 
+seta_inicial:
+	#Print Seta1
+	lui $9, 0x1004
+	addi $9, $9, 24664 #local onde começar a imprimir a seta
+	jal print_seta1
+	
+	addi $15, $15, 1 #valor da seta = 1
+	
+#####################################################################
+	#Ler Teclado
+#####################################################################
+
+LeituraTec:
+                lw $16, 0xFFFF0000         # Checa se alguma tecla foi pressionada
+                blez $16, TecladoOK          # Pula caso nao tenha sido pressionada
+                lw $14, 0xFFFF0004         # Guarda valor da tecla pressionada em $14
+                
+ChecaBaixo:
+                bne $14, 115, ChecaCima     # Testa se tecla pressionada foi 's' (Baixo)
+              	beq $15, 1, TecladoOK	#se a seta estiver na posiçao 1, nao fazer nada
+              	beq $15, 2, seta1 	#se a seta estiver na posiçao 2, mover para posiçao 1
+              	beq $15, 3, seta2	#se a seta estiver na posiçao 1, mover para posiçao 2
+              	beq $15, 4, seta3       #se a seta estiver na posiçao 1, mover para posiçao 3
+              	
+                j       TecladoOK               # Termina leitura teclado
+                
+ChecaCima:
+                bne $14, 119, ChecaFim      # Testa se tecla pressionada foi 'w' (Cima)
+                beq $15, 1, seta2	#se a seta estiver na posiçao 1, mover para posiçao 2
+              	beq $15, 2, seta3 	#se a seta estiver na posiçao 2, mover para posiçao 3
+              	beq $15, 3, seta4	#se a seta estiver na posiçao 1, mover para posiçao 4
+              	beq $15, 4, TecladoOK       #se a seta estiver na posiçao 1, nao fazer nada
+                j       TecladoOK               # Termina leitura teclado
+                
+#Enter:
+#		bne $14, 97, TecladoOK      # Testa se tecla pressionada foi 'a' (Enter)                
+
+ChecaFim:
+                bne $14, 100, TecladoOK      # Testa se tecla pressionada foi 'd' (end)
+                j fim
+ 
+TecladoOK:
+                j LeituraTec
 	
 #####################################################################
 	#FIM
@@ -58,8 +108,107 @@ pxm:	lui $9, 0x1004
 fim:
 	addi $2, $0, 10
 	syscall
+		
+#####################################################################
+	#Print Setas
+#####################################################################	
+		
+seta1:	
+	#Apaga seta 2
+	lui $9, 0x1004
+	addi $9, $9, 22620 #local onde começar a imprimir a seta
+	jal print_setaneg2
 	
+	#Apaga seta 3
+	lui $9, 0x1004
+	addi $9, $9, 19544 #local onde começar a imprimir a seta
+	jal print_setaneg3
+	
+	#Apaga seta 4
+	lui $9, 0x1004
+	addi $9, $9, 17988 #local onde começar a imprimir a seta
+	jal print_setaneg4
+	
+	#Print Seta1
+	lui $9, 0x1004
+	addi $9, $9, 24664 #local onde começar a imprimir a seta
+	jal print_seta1
+	
+	addi $15, $0, 1 #valor da seta = 1
+	j LeituraTec
+	
+seta2:
+	#Apaga Seta1
+	lui $9, 0x1004
+	addi $9, $9, 24664 #local onde começar a imprimir a seta
+	jal print_setaneg1
+	
+	#Apaga seta 3
+	lui $9, 0x1004
+	addi $9, $9, 19544 #local onde começar a imprimir a seta
+	jal print_setaneg3
+	
+	#Apaga seta 4
+	lui $9, 0x1004
+	addi $9, $9, 17988 #local onde começar a imprimir a seta
+	jal print_setaneg4
+	
+	#Print Seta2
+	lui $9, 0x1004
+	addi $9, $9, 22620 #local onde começar a imprimir a seta
+	jal print_seta2
+	
+	addi $15, $0, 2 #valor da seta = 2
+	j LeituraTec
+	
+seta3:
+	#Apaga seta 1
+	lui $9, 0x1004
+	addi $9, $9, 24664 #local onde começar a imprimir a seta
+	jal print_setaneg1
+	
+	#Apaga seta 2
+	lui $9, 0x1004
+	addi $9, $9, 22620 #local onde começar a imprimir a seta
+	jal print_setaneg2
+	
+	#Apaga seta 4
+	lui $9, 0x1004
+	addi $9, $9, 17988 #local onde começar a imprimir a seta
+	jal print_setaneg4
+	
+	#Print Seta3
+	lui $9, 0x1004
+	addi $9, $9, 19544 #local onde começar a imprimir a seta
+	jal print_seta3
+	
+	addi $15, $0, 3 #valor da seta = 3
+	j LeituraTec
+	
+seta4:	
+	#Apaga seta 1
+	lui $9, 0x1004
+	addi $9, $9, 24664 #local onde começar a imprimir a seta
+	jal print_setaneg1
+	
+	#Apaga seta 2
+	lui $9, 0x1004
+	addi $9, $9, 22620 #local onde começar a imprimir a seta
+	jal print_setaneg2
+	
+	#Apaga seta 3
+	lui $9, 0x1004
+	addi $9, $9, 19544 #local onde começar a imprimir a seta
+	jal print_setaneg3
+	
+	#print seta 4	
+	lui $9, 0x1004
+	addi $9, $9, 17988 #local onde começar a imprimir a seta
+	jal print_seta4
 
+	addi $15, $0, 4 #valor da seta = 4
+	j LeituraTec
+	
 #####################################################################
 	#BACKGROUND
 #####################################################################	
@@ -877,7 +1026,7 @@ linha18:
 #4 Pixels
 	addi $8, $0, 4
 	
-n32:	beq $0, $8, fim
+n32:	beq $0, $8, fim_nuvem
 	jal branco
 	subi $8, $8, 1
 	j n32
@@ -886,6 +1035,594 @@ fim_nuvem:
 	jr $30
 	
 
+#####################################################################
+	#SETA1
+#####################################################################
+	
+print_seta1:
+	add $30, $0, $31
+	
+#linha1: 
+	addi $9, $9, 16 #começa na coluna 5
+
+	#1 Pixel
+	jal branco
+	
+
+#linha2:
+	addi $9, $9, 508 #começa na coluna 5
+
+	#2 Pixels
+	jal branco
+	jal branco
+
+#linha3:
+	addi $9, $9, 492 #começa na coluna 2
+
+	#6 Pixels
+	jal branco
+	jal branco
+	jal branco
+	jal branco
+	jal branco
+	jal branco
+
+#linha4:
+	addi $9, $9, 484 #começa na coluna 1
+
+	#8 Pixels
+	jal branco
+	jal branco
+	jal branco
+	jal branco
+	jal branco
+	jal branco
+	jal branco
+	jal branco
+	
+#linha5:
+	addi $9, $9, 496 #começa na coluna 5
+
+	#3 Pixels
+	jal branco
+	jal branco
+	jal branco
+	
+#linha6:
+	addi $9, $9, 500 #começa na coluna 5
+
+	#2 Pixels
+	jal branco
+	jal branco
+
+#linha7:
+	addi $9, $9, 504 #começa na coluna 5
+
+	#1 Pixel
+	jal branco
+	
+fim_seta1:
+	jr $30
+	
+#####################################################################
+	#SETA2
+#####################################################################
+	
+print_seta2:
+	add $30, $0, $31
+	
+#linha1: 
+	addi $9, $9, 4 #começa na coluna 2
+
+	#7 Pixels
+	jal branco
+	jal branco
+	jal branco
+	jal branco
+	jal branco
+	jal branco
+	jal branco
+	
+#linha2:
+	addi $9, $9, 492 #começa na coluna 4
+
+	#4 Pixels
+	jal branco
+	jal branco
+	jal branco
+	jal branco
+
+#linha3:
+	addi $9, $9, 492 #começa na coluna 3
+
+	#4 Pixels
+	jal branco
+	jal branco
+	jal branco
+	jal branco
+
+#linha4:
+	addi $9, $9, 492 #começa na coluna 2
+
+	#2 Pixels
+	jal branco
+	jal branco
+	
+	#Pula 1
+	addi $9, $9, 4 #Pula
+	
+	#1 Pixel
+	jal branco
+	
+#linha5:
+	addi $9, $9, 492 #começa na coluna 1
+
+	#2 Pixels
+	jal branco
+	jal branco
+	
+	#Pula 1
+	addi $9, $9, 4 #Pula
+	
+	#1 Pixel
+	jal branco
+	
+fim_seta2:
+	jr $30
+	
+#####################################################################
+	#SETA3
+#####################################################################
+
+print_seta3:
+	add $30, $0, $31
+	
+#linha1: 
+	addi $9, $9, 16 #começa na coluna 5
+
+	#1 Pixel
+	jal branco
+	
+#linha2:
+	addi $9, $9, 504 #começa na coluna 4
+
+	#2 Pixels
+	jal branco
+	jal branco
+
+#linha3:
+	addi $9, $9, 500 #começa na coluna 3
+
+	#3 Pixels
+	jal branco
+	jal branco
+	jal branco
+
+#linha4:
+	addi $9, $9, 496 #começa na coluna 2
+
+	#4 Pixels
+	jal branco
+	jal branco
+	jal branco
+	jal branco
+	
+#linha5:
+	addi $9, $9, 492 #começa na coluna 1
+
+	#1 Pixel
+	jal branco
+	
+	#Pula 1
+	addi $9, $9, 4 #Pula
+	
+	#3 Pixels
+	jal branco
+	jal branco
+	jal branco
+
+#linha6:
+	addi $9, $9, 496 #começa na coluna 2
+
+	#2 Pixels
+	jal branco
+	jal branco
+	
+	#Pula 1
+	addi $9, $9, 4 #Pula
+	
+	#1 Pixel
+	jal branco
+	
+#linha7:
+	addi $9, $9, 492 #começa na coluna 1
+
+	#2 Pixels
+	jal branco
+	jal branco
+	
+	#Pula 2
+	addi $9, $9, 8 #Pula
+	
+	#1 Pixel
+	jal branco
+
+#linha8:
+	addi $9, $9, 492 #começa na coluna 1
+
+	#1 Pixel
+	jal branco
+
+fim_seta3:
+	jr $30
+	
+#####################################################################
+	#SETA4
+#####################################################################
+
+print_seta4:
+	add $30, $0, $31
+	
+#linha1: 
+	addi $9, $9, 12 #começa na coluna 4
+
+	#1 Pixel
+	jal branco
+	
+#linha2:
+	addi $9, $9, 504 #começa na coluna 3
+
+	#3 Pixels
+	jal branco
+	jal branco
+	jal branco
+	
+#linha3:
+	addi $9, $9, 496 #começa na coluna 2
+
+	#5 Pixels
+	jal branco
+	jal branco
+	jal branco
+	jal branco
+	jal branco
+
+#linha4:
+	addi $9, $9, 488 #começa na coluna 1
+
+	#7 Pixels
+	jal branco
+	jal branco
+	jal branco
+	jal branco
+	jal branco
+	jal branco
+	jal branco
+	
+#linha5:
+	addi $9, $9, 492 #começa na coluna 3
+	
+	#2 Pixels
+	jal branco
+	jal branco
+
+#linha6:
+	addi $9, $9, 504 #começa na coluna 3
+
+	#2 Pixels
+	jal branco
+	jal branco
+	
+#linha7:
+	addi $9, $9, 504 #começa na coluna 3
+
+	#2 Pixels
+	jal branco
+	jal branco
+
+#linha8:
+	addi $9, $9, 508 #começa na coluna 4
+
+	#1 Pixel
+	jal branco
+
+fim_seta4:
+	jr $30		
+
+#####################################################################
+	#SETA NEGATIVA 1
+#####################################################################
+	
+print_setaneg1:
+	add $30, $0, $31
+	
+#linha1: 
+	addi $9, $9, 16 #começa na coluna 5
+
+	#1 Pixel
+	jal azul_c
+	
+
+#linha2:
+	addi $9, $9, 508 #começa na coluna 5
+
+	#2 Pixels
+	jal azul_c
+	jal azul_c
+
+#linha3:
+	addi $9, $9, 492 #começa na coluna 2
+
+	#6 Pixels
+	jal azul_c
+	jal azul_c
+	jal azul_c
+	jal azul_c
+	jal azul_c
+	jal azul_c
+
+#linha4:
+	addi $9, $9, 484 #começa na coluna 1
+
+	#8 Pixels
+	jal azul_c
+	jal azul_c
+	jal azul_c
+	jal azul_c
+	jal azul_c
+	jal azul_c
+	jal azul_c
+	jal azul_c
+	
+#linha5:
+	addi $9, $9, 496 #começa na coluna 5
+
+	#3 Pixels
+	jal azul_c
+	jal azul_c
+	jal azul_c
+	
+#linha6:
+	addi $9, $9, 500 #começa na coluna 5
+
+	#2 Pixels
+	jal azul_c
+	jal azul_c
+
+#linha7:
+	addi $9, $9, 504 #começa na coluna 5
+
+	#1 Pixel
+	jal azul_c
+
+fim_setaneg1:
+	jr $30	
+
+#####################################################################
+	#SETA NEGATIVA 2
+#####################################################################
+
+print_setaneg2:
+	add $30, $0, $31
+	
+#linha1: 
+	addi $9, $9, 4 #começa na coluna 2
+
+	#7 Pixels
+	jal azul_c
+	jal azul_c
+	jal azul_c
+	jal azul_c
+	jal azul_c
+	jal azul_c
+	jal azul_c
+	
+#linha2:
+	addi $9, $9, 492 #começa na coluna 4
+
+	#4 Pixels
+	jal azul_c
+	jal azul_c
+	jal azul_c
+	jal azul_c
+
+#linha3:
+	addi $9, $9, 492 #começa na coluna 3
+
+	#4 Pixels
+	jal azul_c
+	jal azul_c
+	jal azul_c
+	jal azul_c
+
+#linha4:
+	addi $9, $9, 492 #começa na coluna 2
+
+	#2 Pixels
+	jal azul_c
+	jal azul_c
+	
+	#Pula 1
+	addi $9, $9, 4 #Pula
+	
+	#1 Pixel
+	jal azul_c
+	
+#linha5:
+	addi $9, $9, 492 #começa na coluna 1
+
+	#2 Pixels
+	jal azul_c
+	jal azul_c
+	
+	#Pula 1
+	addi $9, $9, 4 #Pula
+	
+	#1 Pixel
+	jal azul_c
+	
+fim_setaneg2:
+	jr $30
+	
+#####################################################################
+	#SETA NEGATIVA 3
+#####################################################################
+	
+print_setaneg3:
+	add $30, $0, $31
+	
+#linha1: 
+	addi $9, $9, 16 #começa na coluna 5
+
+	#1 Pixel
+	jal azul_c
+	
+#linha2:
+	addi $9, $9, 504 #começa na coluna 4
+
+	#2 Pixels
+	jal azul_c
+	jal azul_c
+
+#linha3:
+	addi $9, $9, 500 #começa na coluna 3
+
+	#3 Pixels
+	jal azul_c
+	jal azul_c
+	jal azul_c
+
+#linha4:
+	addi $9, $9, 496 #começa na coluna 2
+
+	#4 Pixels
+	jal azul_c
+	jal azul_c
+	jal azul_c
+	jal azul_c
+	
+#linha5:
+	addi $9, $9, 492 #começa na coluna 1
+
+	#1 Pixel
+	jal azul_c
+	
+	#Pula 1
+	addi $9, $9, 4 #Pula
+	
+	#3 Pixels
+	jal azul_c
+	jal azul_c
+	jal azul_c
+
+#linha6:
+	addi $9, $9, 496 #começa na coluna 2
+
+	#2 Pixels
+	jal azul_c
+	jal azul_c
+	
+	#Pula 1
+	addi $9, $9, 4 #Pula
+	
+	#1 Pixel
+	jal azul_c
+	
+#linha7:
+	addi $9, $9, 492 #começa na coluna 1
+
+	#2 Pixels
+	jal azul_c
+	jal azul_c
+	
+	#Pula 2
+	addi $9, $9, 8 #Pula
+	
+	#1 Pixel
+	jal azul_c
+
+#linha8:
+	addi $9, $9, 492 #começa na coluna 1
+
+	#1 Pixel
+	jal azul_c
+
+fim_setaneg3:
+	jr $30
+	
+#####################################################################
+	#SETA NEGATIVA 4
+#####################################################################
+	
+print_setaneg4:
+	add $30, $0, $31
+	
+#linha1: 
+	addi $9, $9, 12 #começa na coluna 4
+
+	#1 Pixel
+	jal azul_c
+	
+#linha2:
+	addi $9, $9, 504 #começa na coluna 3
+
+	#3 Pixels
+	jal azul_c
+	jal azul_c
+	jal azul_c
+	
+#linha3:
+	addi $9, $9, 496 #começa na coluna 2
+
+	#5 Pixels
+	jal azul_c
+	jal azul_c
+	jal azul_c
+	jal azul_c
+	jal azul_c
+
+#linha4:
+	addi $9, $9, 488 #começa na coluna 1
+
+	#7 Pixels
+	jal azul_c
+	jal azul_c
+	jal azul_c
+	jal azul_c
+	jal azul_c
+	jal azul_c
+	jal azul_c
+	
+#linha5:
+	addi $9, $9, 492 #começa na coluna 3
+	
+	#2 Pixels
+	jal azul_c
+	jal azul_c
+
+#linha6:
+	addi $9, $9, 504 #começa na coluna 3
+
+	#2 Pixels
+	jal azul_c
+	jal azul_c
+	
+#linha7:
+	addi $9, $9, 504 #começa na coluna 3
+
+	#2 Pixels
+	jal azul_c
+	jal azul_c
+
+#linha8:
+	addi $9, $9, 508 #começa na coluna 4
+
+	#1 Pixel
+	jal azul_c
+
+fim_setaneg4:
+	jr $30
+	
 #####################################################################
 	#CORES
 #####################################################################
@@ -913,7 +1650,13 @@ marrom:
 	sw $10, 0($9) #print cor 
 	addi $9, $9, 4 #proximo pixel
 	jr $31
-	
+
+marrom_esc:
+	addi $10, $0, 0x663300 #cor: marrom
+	sw $10, 0($9) #print cor 
+	addi $9, $9, 4 #proximo pixel
+	jr $31
+		
 amarelo:
 	addi $10, $0, 0xdaa520 #cor: amarelo
 	sw $10, 0($9) #print cor 
@@ -928,6 +1671,18 @@ bege:
 
 verde_grama:
 	addi $10, $0, 0x008000 #cor: verde
+	sw $10, 0($9) #print cor 
+	addi $9, $9, 4 #proximo pixel
+	jr $31
+
+verde_claro:
+	addi $10, $0, 0x66ff33 #cor: verde
+	sw $10, 0($9) #print cor 
+	addi $9, $9, 4 #proximo pixel
+	jr $31	
+	
+azul_c:
+	addi $10, $0, 0x87ceeb #cor: azul
 	sw $10, 0($9) #print cor 
 	addi $9, $9, 4 #proximo pixel
 	jr $31
